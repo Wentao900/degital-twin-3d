@@ -49,3 +49,6 @@ go-artifacts
 rust-artifacts
 
 pnpm-lock.yaml
+
+# local claude settings
+.claude/
