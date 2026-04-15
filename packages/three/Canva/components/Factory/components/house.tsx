@@ -7,6 +7,7 @@ import { Geometry, Base, Subtraction, Addition } from '@react-three/csg';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 // import myFont from '/static/STXingkai_Regular.json';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
+import { assetUrl } from '../../../utils/assetUrl';
 extend({ TextGeometry });
 
 interface IHouse {
@@ -72,67 +73,38 @@ const House = (props: IHouse) => {
   };
 
   // const texture = new THREE.TextureLoader().load('/static/wall_pic5.jpg');
-  const texture = new THREE.TextureLoader().load(
-    process.env.NODE_ENV == 'development'
-      ? '/static/wall_pic5.jpg'
-      : `/degital-twin-3d/static/wall_pic5.jpg`
-  );
-  console.log('env', process.env.NODE_ENV);
+  const texture = new THREE.TextureLoader().load(assetUrl('/static/wall_pic5.jpg'));
 
   texture.wrapS = THREE.RepeatWrapping; // 水平方向重复
   texture.repeat.set(0.02, 0.02);
 
-  const roofTexture = new THREE.TextureLoader().load(
-    process.env.NODE_ENV == 'development'
-      ? '/static/wall_pic7.png'
-      : `/degital-twin-3d/static/wall_pic7.png`
-  );
+  const roofTexture = new THREE.TextureLoader().load(assetUrl('/static/wall_pic7.png'));
   roofTexture.wrapS = THREE.RepeatWrapping; // 水平方向重复
   roofTexture.wrapT = THREE.RepeatWrapping; // 垂直方向重复
   roofTexture.rotation = Math.PI / 2;
   roofTexture.repeat.set(0.005, 0.005);
 
-  const floorTexture = new THREE.TextureLoader().load(
-    process.env.NODE_ENV == 'development'
-      ? '/static/floor_02.png'
-      : `/degital-twin-3d/static/floor_02.png`
-  );
+  const floorTexture = new THREE.TextureLoader().load(assetUrl('/static/floor_02.png'));
   floorTexture.wrapS = THREE.RepeatWrapping; // 水平方向重复
   floorTexture.wrapT = THREE.RepeatWrapping; // 垂直方向重复
   floorTexture.repeat.set(0.01, 0.01);
 
-  const roadTexture = new THREE.TextureLoader().load(
-    process.env.NODE_ENV == 'development'
-      ? '/static/road2.jpg'
-      : `/degital-twin-3d/static/road2.jpg`
-  );
+  const roadTexture = new THREE.TextureLoader().load(assetUrl('/static/road2.jpg'));
   roadTexture.wrapS = THREE.RepeatWrapping; // 水平方向重复
   roadTexture.wrapT = THREE.RepeatWrapping; // 垂直方向重复
   roadTexture.repeat.set(5, 1);
 
-  const grassTexture = new THREE.TextureLoader().load(
-    process.env.NODE_ENV == 'development'
-      ? '/static/grass.jpg'
-      : `/degital-twin-3d/static/grass.jpg`
-  );
+  const grassTexture = new THREE.TextureLoader().load(assetUrl('/static/grass.jpg'));
   grassTexture.wrapS = THREE.RepeatWrapping; // 水平方向重复
   grassTexture.wrapT = THREE.RepeatWrapping; // 垂直方向重复
   grassTexture.repeat.set(20, 1);
 
-  const surfaceTexture = new THREE.TextureLoader().load(
-    process.env.NODE_ENV == 'development'
-      ? '/static/surface.jpg'
-      : `/degital-twin-3d/static/surface.jpg`
-  );
+  const surfaceTexture = new THREE.TextureLoader().load(assetUrl('/static/surface.jpg'));
   surfaceTexture.wrapS = THREE.RepeatWrapping; // 水平方向重复
   surfaceTexture.wrapT = THREE.RepeatWrapping; // 垂直方向重复
   surfaceTexture.repeat.set(0.01, 0.01);
 
-  const crossTexture = new THREE.TextureLoader().load(
-    process.env.NODE_ENV == 'development'
-      ? '/static/cross.png'
-      : `/degital-twin-3d/static/cross.png`
-  );
+  const crossTexture = new THREE.TextureLoader().load(assetUrl('/static/cross.png'));
   crossTexture.wrapS = THREE.RepeatWrapping; // 水平方向重复
   crossTexture.wrapT = THREE.RepeatWrapping; // 垂直方向重复
   crossTexture.repeat.set(70, 1);

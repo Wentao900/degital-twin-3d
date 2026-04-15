@@ -3,6 +3,7 @@ import { useLoader } from '@react-three/fiber';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import Goods from './goods';
+import { assetUrl } from '../../../utils/assetUrl';
 
 interface IConveyerBelt {
   hasGoods?: boolean;
@@ -14,12 +15,7 @@ function ConveyerBelt(props: IConveyerBelt) {
   const { hasGoods, position, goodsPosition } = props;
   const model = useMemo(() => {
     // const res = useLoader(FBXLoader, '/static/models/GTX.FBX');
-    const res = useLoader(
-      FBXLoader,
-      process.env.NODE_ENV == 'development'
-        ? '/static/models/GTX.FBX'
-        : `/degital-twin-3d/static/models/GTX.FBX`
-    );
+    const res = useLoader(FBXLoader, assetUrl('/static/models/GTX.FBX'));
     const belt = res.clone();
     belt.scale.set(0.08, 0.05, 0.08);
     return belt;

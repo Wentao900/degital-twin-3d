@@ -3,6 +3,7 @@ import { useLoader } from '@react-three/fiber';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import Goods from './goods';
+import { assetUrl } from '../../../utils/assetUrl';
 
 interface IFourWayCar {
   hasGoods?: boolean;
@@ -13,12 +14,7 @@ function FourWayCar(props: IFourWayCar) {
   const { hasGoods, position } = props;
   const model = useMemo(() => {
     // const res = useLoader(FBXLoader, '/static/models/SXC-JXB.FBX');
-    const res = useLoader(
-      FBXLoader,
-      process.env.NODE_ENV == 'development'
-        ? '/static/models/SXC-JXB.FBX'
-        : `/degital-twin-3d/static/models/SXC-JXB.FBX`
-    );
+    const res = useLoader(FBXLoader, assetUrl('/static/models/SXC-JXB.FBX'));
     const car = res.clone();
     car.scale.set(0.05, 0.06, 0.04);
     return car;

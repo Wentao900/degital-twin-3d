@@ -2,6 +2,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { useLoader } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import Goods from './goods';
+import { assetUrl } from '../../../utils/assetUrl';
 
 interface IMxwCar {
   hasGoods?: boolean;
@@ -13,12 +14,7 @@ function MxwCar(props: IMxwCar) {
   const { hasGoods, position, radian } = props;
   const carModel = useMemo(() => {
     // const res = useLoader(FBXLoader, '/static/models/maixiaowei-1.FBX');
-    const res = useLoader(
-      FBXLoader,
-      process.env.NODE_ENV == 'development'
-        ? '/static/models/maixiaowei-1.FBX'
-        : `/degital-twin-3d/static/models/maixiaowei-1.FBX`
-    );
+    const res = useLoader(FBXLoader, assetUrl('/static/models/maixiaowei-1.FBX'));
     res.scale.set(0.05, 0.05, 0.05);
     return res;
   }, []);

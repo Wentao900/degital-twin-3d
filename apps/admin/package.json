@@ -33,7 +33,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
-    "react-spring": "^9.7.1",
     "react-transition-group": "^4.4.5",
     "sass": "^1.56.1",
     "store": "workspace:*",
@@ -48,15 +47,16 @@
     "@types/node": "^18.16.16",
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
-    "@vitejs/plugin-react": "^2.2.0",
+    "@vitejs/plugin-react": "^5.0.0",
     "autoprefixer": "^10.4.14",
     "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.24",
+    "redux": "^4.2.0",
     "redux-devtools-extension": "^2.13.9",
     "start-server-and-test": "^1.14.0",
     "tsconfig": "workspace:*",
     "typescript": "^4.9.4",
-    "vite": "^4.0.3",
+    "vite": "^4.5.0",
     "vite-plugin-compression": "^0.5.1"
   }
 }

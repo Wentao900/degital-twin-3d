@@ -1,5 +1,5 @@
 import { LeftOutlined, RightOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import { useSpring, animated } from 'react-spring';
+import { useSpring, animated } from '@react-spring/web';
 import { useState } from 'react';
 import styles from '../style.module.scss';
 

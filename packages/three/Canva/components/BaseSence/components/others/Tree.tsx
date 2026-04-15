@@ -1,15 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useLoader } from '@react-three/fiber';
+import { assetUrl } from '../../../../utils/assetUrl';
 
 const TreeModel = ({ position, scale }) => {
   const gltfRef = useRef(null);
-  const gltf = useLoader(
-    GLTFLoader,
-    process.env.NODE_ENV == 'development'
-      ? '/static/models/tree/scene.gltf'
-      : `/degital-twin-3d/static/models/tree/scene.gltf`
-  );
+  const gltf = useLoader(GLTFLoader, assetUrl('/static/models/tree/scene.gltf'));
 
   const setShadow = (obj) => {
     if (obj.children) {

@@ -3,6 +3,7 @@ import { useLoader } from '@react-three/fiber';
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import Goods from './goods';
+import { assetUrl } from '../../../utils/assetUrl';
 
 interface IFourWayCar {
   hasGoods?: boolean;
@@ -18,9 +19,7 @@ function ForkTruck(props: IFourWayCar) {
     // const res = useLoader(FBXLoader, "/static/models/SE-1.FBX");
     const res = useLoader(
       FBXLoader,
-      process.env.NODE_ENV == 'development'
-        ? '/static/models/SE-1.FBX'
-        : `/degital-twin-3d/static/models/SE-1.FBX`
+      assetUrl('/static/models/SE-1.FBX')
     );
     res.scale.set(0.05, 0.05, 0.05);
     return res.clone();
@@ -28,9 +27,7 @@ function ForkTruck(props: IFourWayCar) {
   const model2 = useMemo(() => {
     const res = useLoader(
       FBXLoader,
-      process.env.NODE_ENV == 'development'
-        ? '/static/models/SE-2.FBX'
-        : `/degital-twin-3d/static/models/SE-2.FBX`
+      assetUrl('/static/models/SE-2.FBX')
     );
     res.scale.set(0.05, 0.05, 0.05);
     return res.clone();
@@ -38,9 +35,7 @@ function ForkTruck(props: IFourWayCar) {
   const model3 = useMemo(() => {
     const res = useLoader(
       FBXLoader,
-      process.env.NODE_ENV == 'development'
-        ? '/static/models/SE-3.FBX'
-        : `/degital-twin-3d/static/models/SE-3.FBX`
+      assetUrl('/static/models/SE-3.FBX')
     );
     res.scale.set(0.05, 0.05, 0.05);
     return res.clone();

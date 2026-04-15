@@ -23,6 +23,14 @@
     "turbo": "^1.8.3"
   },
   "packageManager": "pnpm@7.27.0",
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+      }
+    }
+  },
   "dependencies": {
     "tailwind-package": "workspace:*",
     "threejs": "workspace:^1.0.1"

@@ -1,11 +1,11 @@
-import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import vitePluginCompression from 'vite-plugin-compression';
 import { resolve } from 'path';
 
 const baseUrl = 'digital-dist';
 
-export default defineConfig((config) => {
+export default defineConfig(async (config) => {
+  const { default: react } = await import('@vitejs/plugin-react');
   return {
     plugins: [
       react(),
