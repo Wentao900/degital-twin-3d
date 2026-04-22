@@ -3,11 +3,8 @@ import { useFBX } from '@react-three/drei';
 import Stats from 'three/examples/jsm/libs/stats.module';
 import { useFrame } from '@react-three/fiber';
 import React, { useState } from 'react';
-import Lifter from './lifter';
-import Shelf from './shelf';
-import StereoscopicShelf from './stereoscopicShelf';
-import StereoscopicTrack from './stereoscopicTrack';
 import Goods from './goods';
+import GoodsPileComponent from './GoodsPile';
 import FourWayCar from './fourWayCar';
 import MxwCar from './mxwCar';
 import ForkTruck from './forkTruck';
@@ -17,11 +14,7 @@ import Tunnel from './tunnel';
 import Area from './area';
 import { useThree } from '@react-three/fiber';
 
-import shelfData from '../data/shelf';
-import goodsData from '../data/goods';
-import stereoscopicShelfData from '../data/stereoscopicShelf';
-import * as THREE from 'three';
-const { Vector3 } = THREE;
+import goodsPilesData from '../data/goodsPiles';
 import animationData from '../data/animation';
 import tunnelData from '../data/tunnel';
 import areaData from '../data/area';
@@ -60,6 +53,7 @@ const WarehouseMap = observer(() => {
     goodsPosition: [76, 25, 0],
     hasGoods: false,
   });
+  const [selectedPileId, setSelectedPileId] = useState<string | null>(null);
   const statsRef = useRef<Stats | null>(null);
 
   // useEffect(() => {
@@ -220,44 +214,18 @@ const WarehouseMap = observer(() => {
     }
   });
 
-  const goodsEl = useMemo(
+  const goodsPilesEl = useMemo(
     () =>
-      goodsData.map((item, index) => <Goods groupProps={{ position: item }} key={index}></Goods>),
-    []
-  );
-  const stereoscopicShelfEl = useMemo(() => {
-    return (
-      <>
-        {stereoscopicShelfData.shelf.map((item, index) => (
-          <StereoscopicShelf
-            key={index}
-            layout={item.layout}
-            groupProps={{ position: new Vector3(...item.position) }}
-          ></StereoscopicShelf>
-        ))}
-        {stereoscopicShelfData.track.map((item, index) => (
-          <StereoscopicTrack
-            key={index}
-            layout={item.layout}
-            groupProps={{ position: new Vector3(...item.position) }}
-          ></StereoscopicTrack>
-        ))}
-        {stereoscopicShelfData.lifter.map((item, index) => (
-          <Lifter
-            layout={item.layout}
-            groupProps={{ position: new Vector3(...item.position) }}
-            key={index}
-          ></Lifter>
-        ))}
-      </>
-    );
-  }, []);
-  const shelfEl = useMemo(
-    () =>
-      shelfData.map((item, index) => (
-        <Shelf layout={item.layout} groupProps={{ position: item.position }} key={index}></Shelf>
+      goodsPilesData.map((pile) => (
+        <GoodsPileComponent
+          key={pile.pileId}
+          pile={pile}
+          selected={selectedPileId === pile.pileId}
+          onSelect={setSelectedPileId}
+          onClose={() => setSelectedPileId(null)}
+        />
       )),
-    []
+    [selectedPileId]
   );
   const mxwCar = useMemo(() => <MxwCar {...mxwCarData}></MxwCar>, [mxwCarData]);
   const forkTruck = useMemo(
@@ -279,11 +247,9 @@ const WarehouseMap = observer(() => {
     [conveyerBeltData]
   );
   return (
-    <group>
+    <group onPointerMissed={() => setSelectedPileId(null)}>
       {/* <Ground /> */}
-      {goodsEl}
-      {stereoscopicShelfEl}
-      {shelfEl}
+      {goodsPilesEl}
       {mxwCar}
       {forkTruck}
       {fourWayCar}
