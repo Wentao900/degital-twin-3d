@@ -9,7 +9,13 @@ import {
 import { configureStore } from '@reduxjs/toolkit';
 
 import common, { setData } from './reducers/common';
-import user, { setMenu, setUserToken } from './reducers/user';
+import user, {
+  setMenu,
+  setPermissions,
+  setUserInfo,
+  setUserToken,
+  setWarehouseScope,
+} from './reducers/user';
 
 const store = configureStore({
   reducer: {
@@ -34,6 +40,6 @@ type AppDispatch = typeof store.dispatch;
 
 export { store, Provider, useSelector, useDispatch, shallowEqual };
 
-export { setUserToken, setMenu, setData };
+export { setUserToken, setMenu, setUserInfo, setPermissions, setWarehouseScope, setData };
 
 export type { RootState, AppDispatch, TypedUseSelectorHook };

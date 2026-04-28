@@ -3,15 +3,93 @@ import ReactECharts from 'echarts-for-react';
 import { useRequest } from 'ahooks';
 import { config } from '../../config';
 import * as echarts from 'echarts/core';
-import { GetCurrentLocationSummary } from 'apis';
+import { GetDailyTaskSummary, GetInventoryInOutSumPeriod } from 'apis';
+
+const fallbackChartData = {
+  xdata: ['01/01', '01/02', '01/03', '01/04', '01/05'],
+  currentYearList: [10, 20, 30, 40, 50],
+  lastYearList: [20, 10, 30, 40, 20],
+  rateDataOne: [10, 40, 20, 30, 50],
+};
+
+const normalizeStatistics = (flowRows: any[], summaryRows: any[]) => {
+  if (!Array.isArray(flowRows) && !Array.isArray(summaryRows)) {
+    return fallbackChartData;
+  }
+
+  const map = new Map<string, { current: number; last: number }>();
+
+  (Array.isArray(flowRows) ? flowRows : []).forEach((item: any) => {
+    const dateKey =
+      (item.operateTime || item.time || item.createTime || '').toString().slice(5, 10) || '--/--';
+    const current = Number(item.quantity || item.count || item.total || 0);
+    const previous = Number(item.previousQuantity || item.lastQuantity || item.lastTotal || 0);
+
+    map.set(dateKey, {
+      current: (map.get(dateKey)?.current || 0) + current,
+      last: (map.get(dateKey)?.last || 0) + previous,
+    });
+  });
+
+  (Array.isArray(summaryRows) ? summaryRows : []).forEach((item: any) => {
+    const dateKey =
+      (item.reportDate || item.date || item.statDate || '').toString().slice(5, 10) || '--/--';
+    const current = Number(item.currentTotal || item.taskTotal || item.inboundTotal || 0);
+    const previous = Number(item.previousTotal || item.lastTotal || item.outboundTotal || 0);
+
+    map.set(dateKey, {
+      current: (map.get(dateKey)?.current || 0) + current,
+      last: (map.get(dateKey)?.last || 0) + previous,
+    });
+  });
+
+  const xdata = Array.from(map.keys());
+  if (!xdata.length) return fallbackChartData;
+
+  const currentYearList = xdata.map((key) => map.get(key)?.current || 0);
+  const lastYearList = xdata.map((key) => map.get(key)?.last || 0);
+  const rateDataOne = xdata.map((key) => {
+    const current = map.get(key)?.current || 0;
+    const last = map.get(key)?.last || 0;
+    if (!last) return current ? 100 : 0;
+    return Number((((current - last) / last) * 100).toFixed(0));
+  });
+
+  return {
+    xdata,
+    currentYearList,
+    lastYearList,
+    rateDataOne,
+  };
+};
 
 const Statistics: React.FC = () => {
-  let chartData = {
-    xdata: ['01/01', '01/02', '01/03', '01/04', '01/05'],
-    currentYearList: [10, 20, 30, 40, 50],
-    lastYearList: [20, 10, 30, 40, 20],
-    rateDataOne: [10, 40, 20, 30, 50],
-  };
+  const { data } = useRequest(async () => {
+    try {
+      const [flowRes, summaryRes] = await Promise.allSettled([
+        GetInventoryInOutSumPeriod({
+          startDate: '',
+          endDate: '',
+        }),
+        GetDailyTaskSummary(),
+      ]);
+
+      const flowRows =
+        flowRes.status === 'fulfilled'
+          ? flowRes.value?.resultData?.list || flowRes.value?.resultData || []
+          : [];
+      const summaryRows =
+        summaryRes.status === 'fulfilled'
+          ? summaryRes.value?.resultData?.list || summaryRes.value?.resultData || []
+          : [];
+
+      return normalizeStatistics(flowRows, summaryRows);
+    } catch (error) {
+      return fallbackChartData;
+    }
+  }, config);
+
+  const chartData = data || fallbackChartData;
   let dataZoomFlag = false;
   let zoomEnd = 100;
   if (chartData.xdata.length > 6) {

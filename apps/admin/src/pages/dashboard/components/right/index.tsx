@@ -1,6 +1,8 @@
 import { LeftOutlined, RightOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { Button, Modal, Space } from 'antd';
 import { useSpring, animated } from '@react-spring/web';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../style.module.scss';
 
 import Panel from '@/components/Panel';
@@ -8,11 +10,11 @@ import Panel from '@/components/Panel';
 import Allerway from './modules/Allerway';
 import Statistics from './modules/Statistics';
 import Tasks from './modules/Tasks';
-import { Modal } from 'antd';
 
 import Handles from './modules/Handles';
 
 const Right = () => {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
   const [open, setOpen] = useState(false);
   // 定义动画属性
@@ -37,22 +39,41 @@ const Right = () => {
         className={`absolute top-2 w-[280px] right-2 bottom-2 ${styles.panel}`}
       >
         <div className="overflow-auto h-full">
-          <Panel title="出入库信息">
+          <Panel
+            title="出入库信息"
+            right={
+              <Button size="small" type="link" onClick={() => navigate('/analytics')}>
+                明细
+              </Button>
+            }
+          >
             <Allerway />
           </Panel>
-          <Panel title="出入库统计">
+          <Panel
+            title="出入库统计"
+            right={
+              <Button size="small" type="link" onClick={() => navigate('/analytics')}>
+                分析
+              </Button>
+            }
+          >
             <Statistics />
           </Panel>
           <Panel
             title="任务分布"
             right={
-              <span className="hover:scale-120 transition-transform duration-300 ">
-                <UnorderedListOutlined
-                  onClick={() => {
-                    setOpen(true);
-                  }}
-                />
-              </span>
+              <Space size={4}>
+                <Button size="small" type="link" onClick={() => navigate('/analytics')}>
+                  任务分析
+                </Button>
+                <span className="hover:scale-120 transition-transform duration-300 ">
+                  <UnorderedListOutlined
+                    onClick={() => {
+                      setOpen(true);
+                    }}
+                  />
+                </span>
+              </Space>
             }
           >
             <Tasks />

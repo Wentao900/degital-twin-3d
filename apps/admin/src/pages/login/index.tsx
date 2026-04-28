@@ -1,5 +1,6 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Checkbox, Form, Input } from 'antd';
+import { getCurrentUser, getMenus, loginByPassword } from 'apis';
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,8 +17,21 @@ const Login: React.FC = () => {
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
-      const token = JSON.stringify(values);
-      await signIn(dispatch, token);
+      try {
+        const loginRes: any = await loginByPassword(values);
+        const resultData = loginRes?.resultData || {};
+        const [userRes, menuRes] = await Promise.allSettled([getCurrentUser(), getMenus()]);
+
+        await signIn(dispatch, {
+          ...values,
+          ...resultData,
+          userInfo:
+            userRes.status === 'fulfilled' ? userRes.value?.resultData || resultData.user : resultData.user,
+          menu: menuRes.status === 'fulfilled' ? menuRes.value?.resultData || [] : [],
+        });
+      } catch (error) {
+        await signIn(dispatch, values);
+      }
       navigator('/');
     } finally {
       setLoading(false);

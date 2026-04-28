@@ -18,8 +18,8 @@ const Permissions = ({ children }: any) => {
 
 export const baseRouterList = [
   {
-    label: 'Dashboard',
-    key: 'dashboard',
+    label: '数字孪生',
+    key: 'digital-twin',
     path: 'dashboard',
     icon: <DashboardOutlined />,
     filepath: 'pages/dashboard/index.tsx',

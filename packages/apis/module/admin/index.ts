@@ -3,6 +3,7 @@ import { AdminApi } from './typing';
 
 export * from './dashboard';
 export * from './alarm';
+export * from './auth';
 
 export const getGithubIssueItem = (params: AdminApi.IGetGithubIssueItemType) =>
   request<{

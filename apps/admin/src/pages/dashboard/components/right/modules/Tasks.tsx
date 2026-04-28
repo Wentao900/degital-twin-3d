@@ -2,10 +2,104 @@ import React from 'react';
 import ReactECharts from 'echarts-for-react';
 import { useRequest } from 'ahooks';
 import { config } from '../../config';
-import * as echarts from 'echarts/core';
-import { GetCurrentLocationSummary } from 'apis';
+import { CurrentTaskSummary, GetAreaLocationAlarmsSummary } from 'apis';
+
+const fallbackSeriesData = [
+  { name: 'A1', data: [120, 132, 101, 134, 90, 230, 210] },
+  { name: 'C3', data: [220, 182, 191, 234, 290, 330, 310] },
+  { name: 'Y2', data: [150, 232, 201, 154, 190, 330, 410] },
+  { name: 'A3', data: [320, 332, 301, 334, 390, 330, 320] },
+];
+
+const fallbackXAxis = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+const normalizeTaskSeries = (taskRows: any[], alarmRows: any[]) => {
+  const mergedRows = [...(Array.isArray(taskRows) ? taskRows : []), ...(Array.isArray(alarmRows) ? alarmRows : [])];
+
+  if (!mergedRows.length) {
+    return {
+      xAxis: fallbackXAxis,
+      seriesData: fallbackSeriesData,
+    };
+  }
+
+  const dayMap = new Map<string, Map<string, number>>();
+  const xAxis = fallbackXAxis;
+
+  mergedRows.forEach((item: any, index: number) => {
+    const seriesName =
+      item.areaCode || item.areaName || item.taskType || item.typeName || item.name || `S${index + 1}`;
+    const rawSeries =
+      item.data ||
+      item.values ||
+      item.trend ||
+      item.series ||
+      item.countList ||
+      item.valueList ||
+      [];
+
+    const normalized = Array.isArray(rawSeries)
+      ? rawSeries.slice(0, 7).map((val: any) => Number(val || 0))
+      : [];
+
+    if (normalized.length) {
+      dayMap.set(
+        seriesName,
+        new Map(normalized.map((value: number, dayIndex: number) => [xAxis[dayIndex], value]))
+      );
+      return;
+    }
+
+    const dayKey = item.day || item.weekDay || item.label;
+    const dayName =
+      typeof dayKey === 'number'
+        ? xAxis[Math.max(0, Math.min(xAxis.length - 1, dayKey - 1))]
+        : dayKey || xAxis[index % xAxis.length];
+    const value = Number(item.taskCount || item.count || item.total || item.value || 0);
+    const currentSeries = dayMap.get(seriesName) || new Map<string, number>();
+    currentSeries.set(dayName, value);
+    dayMap.set(seriesName, currentSeries);
+  });
+
+  const seriesData = Array.from(dayMap.entries())
+    .slice(0, 4)
+    .map(([name, values]) => ({
+      name,
+      data: xAxis.map((day) => values.get(day) || 0),
+    }));
+
+  return {
+    xAxis,
+    seriesData: seriesData.length ? seriesData : fallbackSeriesData,
+  };
+};
 
 const Tasks: React.FC = () => {
+  const { data } = useRequest(async () => {
+    try {
+      const [taskRes, alarmRes] = await Promise.allSettled([
+        CurrentTaskSummary({}),
+        GetAreaLocationAlarmsSummary({}),
+      ]);
+
+      const taskRows =
+        taskRes.status === 'fulfilled'
+          ? taskRes.value?.resultData?.list || taskRes.value?.resultData || []
+          : [];
+      const alarmRows =
+        alarmRes.status === 'fulfilled'
+          ? alarmRes.value?.resultData?.list || alarmRes.value?.resultData || []
+          : [];
+
+      return normalizeTaskSeries(taskRows, alarmRows);
+    } catch (error) {
+      return {
+        xAxis: fallbackXAxis,
+        seriesData: fallbackSeriesData,
+      };
+    }
+  }, config);
+
   const backgroundColor = '#101736';
   const color = ['#EAEA26', '#906BF9', '#FE5656', '#01E17E', '#3DD1F9', '#FFAD05']; //2个以上的series就需要用到color数组
   const legend = {
@@ -31,12 +125,7 @@ const Tasks: React.FC = () => {
       type: 'shadow',
     },
   };
-  let seriesData = [
-    { name: 'A1', data: [120, 132, 101, 134, 90, 230, 210] },
-    { name: 'C3', data: [220, 182, 191, 234, 290, 330, 310] },
-    { name: 'Y2', data: [150, 232, 201, 154, 190, 330, 410] },
-    { name: 'A3', data: [320, 332, 301, 334, 390, 330, 320] },
-  ];
+  let seriesData = data?.seriesData || fallbackSeriesData;
   const commonConfigFn = (index) => {
     return {
       type: 'line',
@@ -112,7 +201,7 @@ const Tasks: React.FC = () => {
         show: false, //不显示grid竖向分割线
       },
 
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      data: data?.xAxis || fallbackXAxis,
     },
     yAxis: {
       type: 'value',

@@ -1,6 +1,8 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Button, Space } from 'antd';
 import { useSpring, animated } from '@react-spring/web';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../style.module.scss';
 
 import Panel from '@/components/Panel';
@@ -10,6 +12,7 @@ import Task from './modules/Task';
 import AgvPanel from './modules/AgvPanel';
 
 const Left = () => {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
   // 定义动画属性
   const containerAnimation = useSpring({
@@ -32,13 +35,34 @@ const Left = () => {
       className={`absolute top-2 left-2 bottom-2 w-[280px] ${styles.panel}`}
     >
       <div className="h-full overflow-auto">
-        <Panel title="库房情况">
+        <Panel
+          title="库房情况"
+          right={
+            <Button size="small" type="link" onClick={() => navigate('/analytics')}>
+              分析
+            </Button>
+          }
+        >
           <Buffer />
         </Panel>
-        <Panel title="库存类型">
+        <Panel
+          title="库存类型"
+          right={
+            <Button size="small" type="link" onClick={() => navigate('/analytics')}>
+              趋势
+            </Button>
+          }
+        >
           <Task />
         </Panel>
-        <Panel title="AGV信息">
+        <Panel
+          title="AGV信息"
+          right={
+            <Button size="small" type="link" onClick={() => navigate('/analytics')}>
+              设备
+            </Button>
+          }
+        >
           <AgvPanel />
         </Panel>
       </div>

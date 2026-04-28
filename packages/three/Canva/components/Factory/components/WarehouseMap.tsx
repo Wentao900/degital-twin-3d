@@ -14,7 +14,7 @@ import Tunnel from './tunnel';
 import Area from './area';
 import { useThree } from '@react-three/fiber';
 
-import goodsPilesData from '../data/goodsPiles';
+import goodsPilesData, { GoodsPile } from '../data/goodsPiles';
 import animationData from '../data/animation';
 import tunnelData from '../data/tunnel';
 import areaData from '../data/area';
@@ -24,7 +24,14 @@ import conveyerBeltData from '../data/conveyerBelt';
 let index = 0;
 let cntTime = 0;
 
-const WarehouseMap = observer(() => {
+interface WarehouseMapProps {
+  offset?: [number, number, number];
+  goodsPiles?: GoodsPile[];
+  areas?: typeof areaData;
+}
+
+const WarehouseMap = observer(
+  ({ offset = [0, 0, 0], goodsPiles = goodsPilesData, areas = areaData }: WarehouseMapProps) => {
   const { camera } = useThree();
   const [fourWayCarData, setFourWayCarData] = useState({
     position: [-125, 23, 32],
@@ -216,7 +223,7 @@ const WarehouseMap = observer(() => {
 
   const goodsPilesEl = useMemo(
     () =>
-      goodsPilesData.map((pile) => (
+      goodsPiles.map((pile) => (
         <GoodsPileComponent
           key={pile.pileId}
           pile={pile}
@@ -225,7 +232,7 @@ const WarehouseMap = observer(() => {
           onClose={() => setSelectedPileId(null)}
         />
       )),
-    [selectedPileId]
+    [goodsPiles, selectedPileId]
   );
   const mxwCar = useMemo(() => <MxwCar {...mxwCarData}></MxwCar>, [mxwCarData]);
   const forkTruck = useMemo(
@@ -241,13 +248,13 @@ const WarehouseMap = observer(() => {
     () => tunnelData.map((tunnel, index) => <Tunnel key={index} {...tunnel} />),
     []
   );
-  const areaEl = useMemo(() => areaData.map((area, index) => <Area key={index} {...area} />), []);
+  const areaEl = useMemo(() => areas.map((area, index) => <Area key={index} {...area} />), [areas]);
   const conveyerBeltEl = useMemo(
     () => <ConveyerBelt position={[-300, 0, 495]} {...conveyerBeltData}></ConveyerBelt>,
     [conveyerBeltData]
   );
   return (
-    <group onPointerMissed={() => setSelectedPileId(null)}>
+    <group position={offset} onPointerMissed={() => setSelectedPileId(null)}>
       {/* <Ground /> */}
       {goodsPilesEl}
       {mxwCar}

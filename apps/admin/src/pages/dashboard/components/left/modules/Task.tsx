@@ -2,32 +2,43 @@ import React from 'react';
 import ReactECharts from 'echarts-for-react';
 import { useRequest } from 'ahooks';
 import { config } from '../../config';
-import * as echarts from 'echarts/core';
 import { GetCurrentLocationSummary } from 'apis';
 
+const fallbackTrafficWay = [
+  { name: 'HG', value: 20 },
+  { name: 'RG', value: 10 },
+  { name: 'MG', value: 20 },
+  { name: 'FM', value: 10 },
+  { name: 'PG', value: 30 },
+];
+
+const normalizePieData = (resultData: any) => {
+  const rows =
+    resultData?.categoryList ||
+    resultData?.inventoryTypeList ||
+    resultData?.goodsTypeList ||
+    resultData?.typeSummary ||
+    [];
+
+  if (!Array.isArray(rows) || !rows.length) {
+    return fallbackTrafficWay;
+  }
+
+  return rows.slice(0, 5).map((item: any, index: number) => ({
+    name: item.categoryName || item.typeName || item.name || `T${index + 1}`,
+    value: Number(item.quantity || item.count || item.total || item.value || 0),
+  }));
+};
+
 const Task: React.FC = () => {
-  const trafficWay = [
-    {
-      name: 'HG',
-      value: 20,
-    },
-    {
-      name: 'RG',
-      value: 10,
-    },
-    {
-      name: 'MG',
-      value: 20,
-    },
-    {
-      name: 'FM',
-      value: 10,
-    },
-    {
-      name: 'PG',
-      value: 30,
-    },
-  ];
+  const { data: trafficWay = fallbackTrafficWay } = useRequest(async () => {
+    try {
+      const res: any = await GetCurrentLocationSummary({});
+      return normalizePieData(res?.resultData || {});
+    } catch (error) {
+      return fallbackTrafficWay;
+    }
+  }, config);
 
   const data = [];
   const color = ['#00ffff', '#00cfff', '#006ced', '#ffe000', '#ffa800', '#ff5b00'];

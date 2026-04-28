@@ -5,33 +5,49 @@ import { config } from '../../config';
 import * as echarts from 'echarts/core';
 import { GetCurrentLocationSummary } from 'apis';
 
+const fallbackChartData = {
+  xdata: ['A12', 'A2', 'A3', 'A4', 'A5', 'A7', 'B1', 'B3', 'Y2', 'Y1', 'C1', 'C2', 'C4', 'A1', 'B4', 'C6'],
+  ydata: [75, 62, 57, 42, 35, 32, 29, 27, 75, 62, 57, 42, 35, 32, 29, 27],
+};
+
+const normalizeBufferChart = (resultData: any) => {
+  const detailRows =
+    resultData?.locationDetails ||
+    resultData?.locationList ||
+    resultData?.areaLocationList ||
+    resultData?.list ||
+    [];
+
+  if (!Array.isArray(detailRows) || !detailRows.length) {
+    return fallbackChartData;
+  }
+
+  const rows = detailRows.slice(0, 16).map((item: any, index: number) => ({
+    name: item.locationCode || item.areaCode || item.name || `L${index + 1}`,
+    value: Number(item.usedCapacity || item.usedCount || item.occupancy || item.total || 0),
+  }));
+
+  return {
+    xdata: rows.map((item) => item.name),
+    ydata: rows.map((item) => item.value),
+  };
+};
+
 const Buffer: React.FC = () => {
-  const { data } = useRequest(() => GetCurrentLocationSummary({}), {
+  const { data } = useRequest(async () => {
+    try {
+      const res: any = await GetCurrentLocationSummary({});
+      return normalizeBufferChart(res?.resultData || {});
+    } catch (error) {
+      return fallbackChartData;
+    }
+  }, {
     ...config,
   });
 
-  const resultData = data?.resultData || {};
-
   var barWidth = 3;
-  const option3_xdata = [
-    'A12',
-    'A2',
-    'A3',
-    'A4',
-    'A5',
-    'A7',
-    'B1',
-    'B3',
-    'Y2',
-    'Y1',
-    'C1',
-    'C2',
-    'C4',
-    'A1',
-    'B4',
-    'C6',
-  ];
-  const option3_Ydata = [75, 62, 57, 42, 35, 32, 29, 27, 75, 62, 57, 42, 35, 32, 29, 27];
+  const option3_xdata = data?.xdata || fallbackChartData.xdata;
+  const option3_Ydata = data?.ydata || fallbackChartData.ydata;
 
   const option3_Ydatamax = [];
   var yMax2 = Math.max.apply(null, option3_Ydata);

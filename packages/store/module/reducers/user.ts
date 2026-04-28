@@ -8,6 +8,9 @@ export interface IUserInitialState {
   role: string[];
   token: string;
   menu: any[];
+  userInfo: Record<string, any> | null;
+  permissions: string[];
+  warehouseScope: Array<string | number>;
   [key: string]: any;
 }
 
@@ -19,6 +22,9 @@ const initialState: IUserInitialState = {
   role: [],
   token: getStorage(TOKEN) ?? '',
   menu: [],
+  userInfo: null,
+  permissions: [],
+  warehouseScope: [],
 };
 
 export const userSlice = createSlice({
@@ -31,9 +37,19 @@ export const userSlice = createSlice({
     setMenu: (state, action) => {
       state.menu = action.payload;
     },
+    setUserInfo: (state, action) => {
+      state.userInfo = action.payload;
+    },
+    setPermissions: (state, action) => {
+      state.permissions = action.payload;
+    },
+    setWarehouseScope: (state, action) => {
+      state.warehouseScope = action.payload;
+    },
   },
 });
 
-export const { setUserToken, setMenu } = userSlice.actions;
+export const { setUserToken, setMenu, setUserInfo, setPermissions, setWarehouseScope } =
+  userSlice.actions;
 
 export default userSlice.reducer;

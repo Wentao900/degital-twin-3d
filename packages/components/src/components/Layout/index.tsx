@@ -32,8 +32,8 @@ import { Settings as layoutSetting } from '../../config/defaultSetting';
 
 export const baseRouterList = [
   {
-    label: 'Dashboard',
-    key: 'dashboard',
+    label: '数字孪生',
+    key: 'digital-twin',
     path: 'dashboard',
     icon: <DashboardOutlined />,
     filepath: 'pages/dashboard/index.tsx',
@@ -110,7 +110,9 @@ export default () => {
           avatarProps={{
             src: Settings.logo,
             size: 'small',
-            title: <div>{(user.token as unknown as { username: string })?.username}</div>,
+            title: (
+              <div>{user.userInfo?.nickname || user.userInfo?.username || 'Warehouse Operator'}</div>
+            ),
           }}
           // headerContentRender={() => <ProBreadcrumb />}
           // actionsRender={(props) => {

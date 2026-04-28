@@ -12,8 +12,7 @@ import {
   useAppSelector,
   useLocationListen,
 } from 'hooks';
-import { MenuData } from '@/common/mock';
-import { ADMIN } from 'utils';
+import { getLocalMenusByToken } from '@/common/mock';
 import { Settings } from 'utils';
 import { setMenu } from 'store';
 
@@ -32,16 +31,20 @@ function App() {
   });
   const element = useRoutes(cloneDefaultRoutes);
   useEffect(() => {
-    /**
-     * @deprecated 权限菜单控制
-     * 以下简单的示例展示管理员和普通用户的菜单渲染
-     */
-    if ((token as unknown as { username: string })?.username === ADMIN) {
-      dispatch(setMenu([...MenuData.admin]));
-    } else {
-      dispatch(setMenu([...MenuData.user]));
+    if (typeof window !== 'undefined') {
+      (window as any).__APP_AUTH_TOKEN__ =
+        typeof token === 'string' ? token : token?.token || token?.accessToken || '';
     }
-  }, [token]);
+
+    if (!token) {
+      dispatch(setMenu([]));
+      return;
+    }
+
+    if (!menu.length) {
+      dispatch(setMenu(getLocalMenusByToken(token)));
+    }
+  }, [dispatch, menu.length, token]);
 
   return <AuthContext.Provider value={{ signIn, signOut }}>{element}</AuthContext.Provider>;
 }
